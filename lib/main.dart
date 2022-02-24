@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 import 'firebase_options.dart';
+import 'dart:math';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,15 +13,24 @@ void main() async {
   runApp(GetUserName('YZsLFiI1SAjOVv0Z3FH7'));
 }
 
-class GetUserName extends StatelessWidget {
+class GetUserName extends StatefulWidget {
   final String documentId;
 
   GetUserName(this.documentId);
 
   @override
+  State<GetUserName> createState() => _GetUserNameState();
+}
+
+class _GetUserNameState extends State<GetUserName> {
+  @override
   Widget build(BuildContext context) {
     CollectionReference yoNunca =
         FirebaseFirestore.instance.collection('Yo nunca');
+    Random random = Random();
+    int index = 0;
+    List<DQuestion> questions = [];
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: SafeArea(
@@ -34,13 +44,24 @@ class GetUserName extends StatelessWidget {
               }
 
               if (snapshot.connectionState == ConnectionState.done) {
-                List<DQuestion> questions = snapshot.data!.docs
+                questions = snapshot.data!.docs
                     .map((question) => DQuestion(question['Pregunta']))
                     .toList();
 
-                return ListTile(
-                  style: ListTileStyle.list,
-                  title: Text("Pregunta : ${questions[98].Pregunta}"),
+                return Column(
+                  children: [
+                    ListTile(
+                      style: ListTileStyle.list,
+                      title: Text(
+                          "Pregunta : ${questions[random.nextInt(questions.length)].question}"),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        setState(() {});
+                      },
+                      icon: Icon(Icons.change_circle),
+                    )
+                  ],
                 );
               }
 
@@ -54,7 +75,7 @@ class GetUserName extends StatelessWidget {
 }
 
 class DQuestion {
-  String Pregunta;
+  String question;
 
-  DQuestion(this.Pregunta);
+  DQuestion(this.question);
 }
